@@ -1,0 +1,19 @@
+version: '3.8'
+
+services:
+  # MongoDB Service
+  mongo:
+    image: mongo:latest
+    container_name: my-mongo-db
+    ports:
+      - '27017:27017' # Maps container port 27017 to host port 27017
+    environment:
+      # These are the credentials for the database
+      MONGO_INITDB_ROOT_USERNAME: myadmin
+      MONGO_INITDB_ROOT_PASSWORD: mypassword
+    volumes:
+      - mongo-data:/data/db # Persists data in a named volume
+
+# Defines the named volume
+volumes:
+  mongo-data:
