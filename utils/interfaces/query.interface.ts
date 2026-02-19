@@ -11,6 +11,7 @@ interface IQuery {
   lte?: string;
   range?: string;
   populate?: string;
+  [key: string]: any;
 }
 
 export default IQuery;

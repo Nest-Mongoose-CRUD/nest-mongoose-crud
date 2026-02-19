@@ -1,97 +1,110 @@
-import APIFeatures from './apiFeatures.utils';
-import IQuery from '../src/interfaces/query.interface';
+// base/interfaces/crud-service.interface.ts
 
-import { NotFoundException } from '@nestjs/common';
-
+// base/abstract-crud.service.ts
 import { Model, Document } from 'mongoose';
+import { NotFoundException } from '@nestjs/common';
+import APIFeatures from '../utils/apiFeatures.utils';
+import IQuery from './interfaces/query.interface';
+import { ICrudService } from './interfaces/crud-service.interface';
 
-export const getAll = async <T extends Document>(
-  model: Model<T>,
-  query: IQuery,
-) => {
-  const payload = new APIFeatures(model.find(), query)
-    .filter()
-    .sort()
-    .limitFields()
-    .paginate();
-  // .search()
-  // .gt()
-  // .lt()
-  // .gte()
-  // .lte()
-  // .range()
-  // .relations().payload;
+export abstract class AbstractCrudService<T extends Document>
+  implements ICrudService<T>
+{
+  constructor(
+    protected readonly model: Model<T>,
+    protected readonly entityName: string = 'Document',
+  ) {}
 
-  // console.log(JSON.stringify(payload));
+  async getAll(query: IQuery) {
+    const features = new APIFeatures(this.model.find(), query)
+      .filter()
+      .search()
+      .populate()
+      .sort()
+      .limitFields()
+      .paginate();
 
-  const limit = query.limit ? +query.limit : 10;
+    const limit = query.limit ? +query.limit : 10;
+    const page = query.page ? +query.page : 1;
 
-  const page = query.page ? +query.page : 1;
+    const [result, count] = await Promise.all([
+      this.model.find(features.query),
+      this.model.countDocuments(features.filterObject),
+    ]);
 
-  const result = await model.find(payload.query);
+    const pages = Math.ceil(count / limit);
 
-  const count = await model.countDocuments(payload.query);
+    return {
+      status: 'success',
+      total: result.length,
+      pagination: {
+        nextPage: page < pages ? page + 1 : null,
+        prevPage: page > 1 ? page - 1 : null,
+        currentPage: page, // Now it's definitely a number
+        totalPages: pages,
+        totalItems: count,
+        itemsPerPage: limit,
+      },
+      data: result,
+    };
+  }
 
-  const pages = Math.ceil(count / +limit);
+  async getOne(id: string, query: Partial<IQuery> = {}) {
+    const features = new APIFeatures(this.model.find({ _id: id }), query)
+      .filter()
+      .populate();
 
-  const nextPage = +page < pages ? +page * 1 + 1 : null;
+    const [result] = await features.query;
 
-  const prevPage = +page > 1 ? +page - 1 : null;
+    if (!result) {
+      throw new NotFoundException(`${this.entityName} with ID ${id} not found`);
+    }
 
-  return {
-    status: 'success',
-    total: result.length,
-    nextPage,
-    prevPage,
-    count,
-    pages,
-    currentPage: page,
-    data: result,
-  };
-};
+    return { status: 'success', data: result };
+  }
 
-export const getOne = async (
-  model: any,
-  id: string,
-  query: Partial<IQuery>,
-) => {
-  const { relations } = query;
+  async createOne(payload: Partial<T>) {
+    const result = await this.model.create(payload);
+    return { status: 'success', data: result };
+  }
 
-  const payload: any = { where: { id } };
+  async updateOne(id: string, payload: Partial<T>) {
+    const result = await this.model.findByIdAndUpdate(id, payload, {
+      new: true,
+      runValidators: true,
+    });
 
-  if (relations) payload.relations = relations.split(',');
+    if (!result) {
+      throw new NotFoundException(`${this.entityName} with ID ${id} not found`);
+    }
 
-  const [result] = await model.find(payload);
+    return { status: 'success', data: result };
+  }
 
-  if (!result) throw new NotFoundException('No resource with that ID');
+  async deleteOne(id: string) {
+    const result = await this.model.findByIdAndDelete(id);
 
-  return { status: 'success', data: result };
-};
+    if (!result) {
+      throw new NotFoundException(`${this.entityName} with ID ${id} not found`);
+    }
 
-export const createOne = async (model: any, payload: any) => {
-  const data = model.create(payload);
+    return {
+      status: 'success',
+      message: `${this.entityName} deleted successfully`,
+      data: { id },
+    };
+  }
 
-  const result = await model.save(data);
+  // Utility methods
+  protected async findById(id: string): Promise<T | null> {
+    return this.model.findById(id);
+  }
 
-  return { status: 'success', data: result };
-};
+  protected async findOne(filter: any): Promise<T | null> {
+    return this.model.findOne(filter);
+  }
 
-export const updateOneOne = async (model: any, id: string, payload: any) => {
-  const data = await model.findOneBy({ id });
-
-  if (!data) throw new NotFoundException('No resource with that ID');
-
-  await model.update({ id }, payload);
-
-  const saved = await model.findOneBy({ id });
-
-  return { status: 'success', data: saved };
-};
-
-export const deleteOne = async (model: any, id: string) => {
-  const data = await model.findOneBy({ id });
-
-  if (!data) throw new NotFoundException('No resource with that ID');
-
-  return model.delete({ id });
-};
+  protected async findMany(filter: any = {}): Promise<T[]> {
+    return this.model.find(filter);
+  }
+}

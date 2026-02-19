@@ -1,45 +1,13 @@
-import {
-  Controller,
-  Get,
-  Post,
-  Body,
-  Patch,
-  Param,
-  Delete,
-  Query,
-} from '@nestjs/common';
-import { UserService } from './user.service';
-import { CreateUserDto } from './dto/create-user.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
+import { Controller } from '@nestjs/common';
 
-import type IQuery from 'src/interfaces/query.interface';
+import { UserService } from './user.service';
+
+import { BaseCrudController } from 'utils/base-crud.controller';
+import { UserDocument } from './schemas/user.schema';
 
 @Controller('users')
-export class UserController {
-  constructor(private readonly userService: UserService) {}
-
-  @Post()
-  create(@Body() createUserDto: CreateUserDto) {
-    return this.userService.create(createUserDto);
-  }
-
-  @Get()
-  findAll(@Query() query: IQuery) {
-    return this.userService.findAll(query);
-  }
-
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.userService.findOne(+id);
-  }
-
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
-    return this.userService.update(+id, updateUserDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.userService.remove(+id);
+export class UserController extends BaseCrudController<UserDocument> {
+  constructor(protected readonly service: UserService) {
+    super();
   }
 }
