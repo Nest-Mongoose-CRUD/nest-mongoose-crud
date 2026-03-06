@@ -1,0 +1,25 @@
+{
+  "compilerOptions": {
+    "target": "ES2020",
+    "module": "commonjs",
+    "lib": ["ES2020"],
+    "declaration": true,
+    "outDir": "../test-project/package/dist",
+    "rootDir": "../test-project/package/src",
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "resolveJsonModule": true,
+    "moduleResolution": "node",
+    "allowSyntheticDefaultImports": true,
+    "declarationMap": true,
+    "sourceMap": true
+  },
+  "include": ["../test-project/package/src/**/*"],
+  "exclude": [
+    "../test-project/package/node_modules",
+    "../test-project/package/dist",
+    "../test-project/package/**/*.test.ts"
+  ]
+}

@@ -3,7 +3,7 @@
 // base/abstract-crud.service.ts
 import { Model, Document } from 'mongoose';
 import { NotFoundException } from '@nestjs/common';
-import APIFeatures from '../utils/apiFeatures.utils';
+import APIFeatures from './apiFeatures.utils';
 import IQuery from './interfaces/query.interface';
 import { ICrudService } from './interfaces/crud-service.interface';
 

@@ -1,0 +1,21 @@
+"use strict";
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.LogRequest2Interceptor = void 0;
+const common_1 = require("@nestjs/common");
+let LogRequest2Interceptor = class LogRequest2Interceptor {
+    intercept(context, next) {
+        console.log('Interceptor 2');
+        return next.handle();
+    }
+};
+exports.LogRequest2Interceptor = LogRequest2Interceptor;
+exports.LogRequest2Interceptor = LogRequest2Interceptor = __decorate([
+    (0, common_1.Injectable)()
+], LogRequest2Interceptor);
+//# sourceMappingURL=log-request-2.interceptor.js.map

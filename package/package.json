@@ -1,0 +1,47 @@
+{
+  "name": "nest-mongoose-crud",
+  "version": "1.0.0",
+  "description": "A reusable handler factory utility for NestJS and Mongoose projects",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "test": "jest",
+    "prepare": "npm run build",
+    "prepublish": "npm run build"
+  },
+  "keywords": [
+    "nestjs",
+    "handler",
+    "factory",
+    "mongoose",
+    "crud"
+  ],
+  "author": "Your Name",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yourorg/handler-factory"
+  },
+  "bugs": {
+    "url": "https://github.com/yourorg/handler-factory/issues"
+  },
+  "homepage": "https://github.com/yourorg/handler-factory#readme",
+  "peerDependencies": {
+    "@nestjs/common": "^9.0.0 || ^10.0.0",
+    "mongoose": "^7.0.0 || ^8.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "typescript": "^5.0.0"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}
