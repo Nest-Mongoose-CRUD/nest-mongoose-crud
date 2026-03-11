@@ -39,7 +39,7 @@ const BaseController: Type<any> = createCrudController({
 @Controller('posts')
 export class PostController extends BaseController {
   constructor(private service: PostService) {
-    super(service); // Pass service to parent constructor
+    super(service);
   }
 
   @Post()
